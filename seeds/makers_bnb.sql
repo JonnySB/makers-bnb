@@ -35,7 +35,7 @@ CREATE SEQUENCE IF NOT EXISTS bookings_id_seq;
 CREATE TABLE bookings (
     id SERIAL PRIMARY KEY,
     date date,
-    available boolean,
+    is_available boolean,
     space_id int,
     constraint fk_space foreign key(space_id)
         references spaces(id)
@@ -54,18 +54,18 @@ INSERT INTO spaces (name, description, price, user_id) VALUES ('Sunset Serenity 
 INSERT INTO spaces (name, description, price, user_id) VALUES ('Luxury Skyline Penthouse', 'Indulge in luxury high above the city. Our penthouse boasts panoramic skyline views and top-notch amenities.', 130, 4);
 INSERT INTO spaces (name, description, price, user_id) VALUES ('Seaside Bliss Villa', 'Escape to paradise in our seaside villa. Relax to the sound of waves and enjoy the ultimate beachfront experience.', 130, 1);
 
-INSERT INTO bookings (date, available, space_id) VALUES ('2024-05-10', 'TRUE', 1);
-INSERT INTO bookings (date, available, space_id) VALUES ('2024-05-11', 'FALSE', 1);
-INSERT INTO bookings (date, available, space_id) VALUES ('2024-05-12', 'FALSE', 1);
+INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-10', 'TRUE', 1);
+INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-11', 'FALSE', 1);
+INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-12', 'FALSE', 1);
 
-INSERT INTO bookings (date, available, space_id) VALUES ('2024-05-10', 'FALSE', 2);
-INSERT INTO bookings (date, available, space_id) VALUES ('2024-05-11', 'FALSE', 2);
-INSERT INTO bookings (date, available, space_id) VALUES ('2024-05-12', 'TRUE', 2);
+INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-10', 'FALSE', 2);
+INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-11', 'FALSE', 2);
+INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-12', 'TRUE', 2);
 
-INSERT INTO bookings (date, available, space_id) VALUES ('2024-05-10', 'TRUE', 3);
-INSERT INTO bookings (date, available, space_id) VALUES ('2024-05-11', 'TRUE', 3);
-INSERT INTO bookings (date, available, space_id) VALUES ('2024-05-12', 'TRUE', 3);
+INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-10', 'TRUE', 3);
+INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-11', 'TRUE', 3);
+INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-12', 'TRUE', 3);
 
-INSERT INTO bookings (date, available, space_id) VALUES ('2024-05-10', 'TRUE', 4);
-INSERT INTO bookings (date, available, space_id) VALUES ('2024-05-11', 'TRUE', 4);
-INSERT INTO bookings (date, available, space_id) VALUES ('2024-05-12', 'TRUE', 4);
+INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-10', 'TRUE', 4);
+INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-11', 'TRUE', 4);
+INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-12', 'TRUE', 4);

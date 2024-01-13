@@ -5,11 +5,12 @@ from datetime import date
 Initialises with given attributes
 """
 
+
 def test_initialises_with_given_attributes():
     date1 = Booking(1, date(2023, 12, 5), True, 1)
     assert date1.id == 1
     assert date1.date == date(2023, 12, 5)
-    assert date1.available == True
+    assert date1.is_available == True
     assert date1.space_id == 1
 
 
