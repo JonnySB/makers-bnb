@@ -28,8 +28,8 @@ CREATE TABLE spaces (
 
 ----------------
 
-DROP TABLE IF EXISTS bookings CASCADE;
-DROP SEQUENCE IF EXISTS bookings_id_seq;
+drop table if exists bookings cascade;
+drop sequence if exists bookings_id_seq;
 
 CREATE SEQUENCE IF NOT EXISTS bookings_id_seq;
 CREATE TABLE bookings (
@@ -41,6 +41,28 @@ CREATE TABLE bookings (
         references spaces(id)
         on delete cascade  
 );
+
+----------------
+
+drop table if exists booking_requests cascade;
+drop sequence if exists booking_requests_id_seq;
+
+CREATE SEQUENCE IF NOT EXISTS booking_requests_id_seq;
+CREATE TABLE booking_requests (
+    id SERIAL PRIMARY KEY,
+    booking_id int,
+    guest_id int,
+    booking_message text,
+    status int,
+    constraint fk_booking_id foreign key(booking_id)
+        references bookings(id)
+        on delete cascade,
+    constraint fk_guest_id foreign key(guest_id)
+        references users(id)
+        on delete cascade  
+);
+
+----------------
 
 INSERT INTO users (username, email, hashed_password) VALUES ('user1', 'user1@user.com', '\x243262243132247869754d4f49332f43434a713167786d78505152567538782f5269726d4a32303450424d6a53766f7464744a4476436641616e3761');
 INSERT INTO users (username, email, hashed_password) VALUES ('user2', 'user2@user.com', '\x243262243132247869754d4f49332f43434a713167786d78505152567538782f5269726d4a32303450424d6a53766f7464744a4476436641616e3761');
@@ -69,3 +91,8 @@ INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-12', 'TRUE'
 INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-10', 'TRUE', 4);
 INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-11', 'TRUE', 4);
 INSERT INTO bookings (date, is_available, space_id) VALUES ('2024-05-12', 'TRUE', 4);
+
+
+INSERT INTO booking_requests (booking_id, guest_id, booking_message, status) VALUES (1, 1, 'Would be great to stay!', 1);
+INSERT INTO booking_requests (booking_id, guest_id, booking_message, status) VALUES (1, 2, 'Would be fab to stay!', 1);
+INSERT INTO booking_requests (booking_id, guest_id, booking_message, status) VALUES (1, 3, 'Would be awesome to stay!', 1);
