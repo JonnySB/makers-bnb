@@ -28,16 +28,17 @@ def get_user_details(connection):
     return user_details
 
 
-@app.route("/")
-def set_default_route():
-    return redirect("/spaces")
-
-
+# for development purposes only - easy reseeding:
 @app.route("/reseed")
 def reseed_database():
     connection = get_flask_database_connection(app)
     connection.connect()
     connection.seed("seeds/makers_bnb.sql")
+    return redirect("/spaces")
+
+
+@app.route("/")
+def set_default_route():
     return redirect("/spaces")
 
 
