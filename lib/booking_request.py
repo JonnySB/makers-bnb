@@ -1,13 +1,21 @@
 class BookingRequest:
-    def __init__(self, id, booking_id, guest_id, booking_message, status):
+    def __init__(self, id, booking_id, guest_id, booking_message, status_num):
         self.id = id
         self.booking_id = booking_id
         self.guest_id = guest_id
         self.booking_message = booking_message
-        self.status = status
+        self.set_status(status_num)
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
     def __repr__(self):
-        return f"Space: {self.id}, {self.booking_id}, {self.guest_id}, {self.booking_message}, {self.status}"
+        return f"BookingRequest: {self.id}, {self.booking_id}, {self.guest_id}, {self.booking_message}, {self.status}"
+
+    def set_status(self, status_num):
+        if status_num == 1:
+            self.status = "pending"
+        elif status_num == 2:
+            self.status = "accepted"
+        else:
+            self.status = "declined"
