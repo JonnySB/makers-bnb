@@ -1,5 +1,6 @@
 import os
 from flask import Flask, request, render_template, redirect, session
+from lib.booking_request_repository import BookingRequestRepository
 from lib.database_connection import get_flask_database_connection
 from lib.space_repository import *
 from lib.space import *
@@ -11,22 +12,26 @@ from datetime import datetime, timedelta
 
 # Create a new Flask app
 import secrets
+
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
 # == Your Routes Here ==
 
+
 def get_user_details(connection):
     user_repo = UserRepository(connection)
-    user_id = session.get('user_id', None)
+    user_id = session.get("user_id", None)
     user_details = None
     if user_id != None:
         user_details = user_repo.get_user_details(user_id)
     return user_details
 
+
 @app.route("/")
 def set_default_route():
     return redirect("/spaces")
+
 
 @app.route("/reseed")
 def reseed_database():
@@ -34,6 +39,7 @@ def reseed_database():
     connection.connect()
     connection.seed("seeds/makers_bnb.sql")
     return redirect("/spaces")
+
 
 # 'Homepage'
 @app.route("/spaces", methods=["GET"])
@@ -43,40 +49,45 @@ def get_spaces():
 
     spaces = space_repo.all()
 
-    logged_in = session.get('logged_in', False)
+    logged_in = session.get("logged_in", False)
     user_details = get_user_details(connection)
 
-    return render_template("spaces/spaces.html", spaces=spaces, logged_in=logged_in, user=user_details)
+    return render_template(
+        "spaces/spaces.html", spaces=spaces, logged_in=logged_in, user=user_details
+    )
 
 
-@app.route("/spaces/new", methods=['GET'])
+@app.route("/spaces/new", methods=["GET"])
 def get_new_space():
     connection = get_flask_database_connection(app)
 
-    logged_in = session.get('logged_in', False)
+    logged_in = session.get("logged_in", False)
     user_details = get_user_details(connection)
 
-    return render_template('spaces/new.html', logged_in=logged_in, user=user_details)
+    return render_template("spaces/new.html", logged_in=logged_in, user=user_details)
 
-@app.route("/spaces", methods=['POST'])
+
+@app.route("/spaces", methods=["POST"])
 def create_space():
     connection = get_flask_database_connection(app)
     space_repository = SpaceRepository(connection)
     booking_repository = BookingRepository(connection)
 
-    name = request.form['name']
-    description = request.form['description']
-    price = request.form['price']
-    available_from = request.form['available_from']
-    available_to = request.form['available_to']
+    name = request.form["name"]
+    description = request.form["description"]
+    price = request.form["price"]
+    available_from = request.form["available_from"]
+    available_to = request.form["available_to"]
 
     user_details = get_user_details(connection)
 
-    space = Space(None, name, description, price, user_details.id) # needs to include user_id once login functionality added
+    space = Space(
+        None, name, description, price, user_details.id
+    )  # needs to include user_id once login functionality added
     space = space_repository.create(space)
 
-    available_from = datetime.strptime(available_from, '%Y-%m-%d')
-    available_to = datetime.strptime(available_to, '%Y-%m-%d')
+    available_from = datetime.strptime(available_from, "%Y-%m-%d")
+    available_to = datetime.strptime(available_to, "%Y-%m-%d")
     current_date = available_from
     while current_date <= available_to:
         booking = Booking(None, current_date, True, space.id)
@@ -94,10 +105,16 @@ def get_space(id):
     space = space_repo.find(id)
     bookings = booking_repo.get_by_id(id)
 
-    logged_in = session.get('logged_in', False)
+    logged_in = session.get("logged_in", False)
     user_details = get_user_details(connection)
 
-    return render_template("space.html", space=space, bookings=bookings, logged_in=logged_in, user=user_details)
+    return render_template(
+        "space.html",
+        space=space,
+        bookings=bookings,
+        logged_in=logged_in,
+        user=user_details,
+    )
 
 
 @app.route("/spaces/rent/<booking_id>/<space_id>", methods=["GET"])
@@ -148,17 +165,42 @@ def login_user():
     # If the user can't be found:
     if not user_id:
         return render_template("login.html", errors="Incorrect login details")
-    
-    session['user_id'] = user_id
-    session['logged_in'] = True
+
+    session["user_id"] = user_id
+    session["logged_in"] = True
 
     return redirect("/spaces")
 
+
 @app.route("/logout", methods=["GET"])
 def logout_user():
-    session['user_id'] = None
-    session['logged_in'] = False
+    session["user_id"] = None
+    session["logged_in"] = False
     return redirect(f"/spaces")
+
+
+@app.route("/manage_requests/host", methods=["GET"])
+def manage_booking_requests():
+    connection = get_flask_database_connection(app)
+    booking_request_repository = BookingRequestRepository(connection)
+    booking_requests = booking_request_repository.get_host_requests(1)
+
+    users = UserRepository(connection)
+    bookings = BookingRepository(connection)
+    spaces = SpaceRepository(connection)
+
+    booking_request_details = []
+    for request in booking_requests:
+        guest = users.get_user_details(request.guest_id)
+        booking = bookings.get_by_booking_id(request.booking_id)
+        space = spaces.find(booking.space_id)
+        host = users.get_user_details(space.user_id)
+        booking_request_details.append([request, guest, booking, space, host])
+
+    return render_template(
+        "manage_booking_requests.html", booking_requests=booking_request_details
+    )
+
 
 # These lines start the server if you run this file directly
 # They also start the server configured to use the test database

@@ -37,3 +37,15 @@ class BookingRepository:
         row = rows[0]
         booking.id = row["id"]
         return booking
+
+    def get_by_booking_id(self, booking_id):
+        rows = self._connection.execute(
+            "SELECT * FROM bookings WHERE id = %s;", [booking_id]
+        )
+        row = rows[0]
+        return Booking(
+            row["id"],
+            row["date"],
+            row["is_available"],
+            row["space_id"],
+        )

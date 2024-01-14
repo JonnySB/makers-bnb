@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Manage my requests</title>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    {% for request, guest, booking, space, host in booking_requests %}
+    <div>
+      <ul>
+        <li>space - {{space.name}}</li>
+        <li>guest - {{guest.username}}</li>
+        <li>date - {{booking.date}}</li>
+        <li>booking message - {{request.booking_message}}</li>
+        <li>request status - {{request.status}}</li>
+      </ul>
+      <br />
+      <br />
+    </div>
+    {% endfor %}
+  </body>
+</html>

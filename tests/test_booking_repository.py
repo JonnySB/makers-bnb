@@ -16,6 +16,7 @@ def test_get_space_bookings(db_connection):
         Booking(3, date(2024, 5, 12), False, 1),
     ]
 
+
 def test_update_booking(db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     booking_repository = BookingRepository(db_connection)
@@ -39,11 +40,14 @@ def test_update_booking(db_connection):
         Booking(3, date(2024, 5, 12), False, 1),
     ]
 
+
 """
 When I call #create
 I create a booking in the bookings table
 and can find it with #get_by_id
 """
+
+
 def test_create_booking(db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     repository = BookingRepository(db_connection)
@@ -53,5 +57,12 @@ def test_create_booking(db_connection):
         Booking(1, date(2024, 5, 10), True, 1),
         Booking(2, date(2024, 5, 11), False, 1),
         Booking(3, date(2024, 5, 12), False, 1),
-        Booking(13, date(2024, 5, 13), True, 1)
+        Booking(13, date(2024, 5, 13), True, 1),
     ]
+
+
+def test_get_by_booking_id(db_connection):
+    db_connection.seed("seeds/makers_bnb.sql")
+    repository = BookingRepository(db_connection)
+    booking = repository.get_by_booking_id(1)
+    assert booking == Booking(1, date(2024, 5, 10), True, 1)
