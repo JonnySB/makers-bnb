@@ -16,9 +16,8 @@ import secrets
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
-# == Your Routes Here ==
 
-
+# == Helper Methods ==
 def get_user_details(connection):
     user_repo = UserRepository(connection)
     user_id = session.get("user_id", None)
@@ -26,6 +25,67 @@ def get_user_details(connection):
     if user_id != None:
         user_details = user_repo.get_user_details(user_id)
     return user_details
+
+
+# == User Create / Login / Logout Routes ==
+@app.route("/signup", methods=["GET"])
+def get_user_info():
+    return render_template("user_signup.html")
+
+
+@app.route("/add_user", methods=["POST"])
+def add_user_to_db():
+    connection = get_flask_database_connection(app)
+    user_repository = UserRepository(connection)
+
+    username = request.form["username"]
+    email = request.form["email"]
+    password = request.form["password"]
+    # confirm_password
+
+    user = User(None, username, email, password)
+
+    user = user_repository.create(user)
+    return redirect("/login")
+
+
+# @app.route("/login", methods=["GET"])
+# def render_login_page():
+#     return render_template("login.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login_user():
+    if request.method == "GET":
+        return render_template("login.html")
+    else:
+        connection = get_flask_database_connection(app)
+        user_repository = UserRepository(connection)
+
+        username = request.form["user"]
+        password = request.form["password"]
+
+        # Check if user is in db and password matches
+        user_id = user_repository.verify_user_login(username, password)
+
+        # If the user can't be found:
+        if not user_id:
+            return render_template("login.html", errors="Incorrect login details")
+
+        session["user_id"] = user_id
+        session["logged_in"] = True
+
+        return redirect("/spaces")
+
+
+@app.route("/logout", methods=["GET"])
+def logout_user():
+    session["user_id"] = None
+    session["logged_in"] = False
+    return redirect(f"/spaces")
+
+
+# == unauthenticated routes ==
 
 
 # for development purposes only - easy reseeding:
@@ -37,12 +97,13 @@ def reseed_database():
     return redirect("/spaces")
 
 
+# Homepage redirect
 @app.route("/")
 def set_default_route():
     return redirect("/spaces")
 
 
-# 'Homepage'
+# Homepage
 @app.route("/spaces", methods=["GET"])
 def get_spaces():
     connection = get_flask_database_connection(app)
@@ -126,60 +187,6 @@ def rent_space(booking_id, space_id):
     return redirect(f"/spaces/{space_id}")
 
 
-@app.route("/signup", methods=["GET"])
-def get_user_info():
-    return render_template("user_signup.html")
-
-
-@app.route("/add_user", methods=["POST"])
-def add_user_to_db():
-    connection = get_flask_database_connection(app)
-    user_repository = UserRepository(connection)
-
-    username = request.form["username"]
-    email = request.form["email"]
-    password = request.form["password"]
-    # confirm_password
-
-    user = User(None, username, email, password)
-
-    user = user_repository.create(user)
-    return redirect("/login")
-
-
-@app.route("/login", methods=["GET"])
-def render_login_page():
-    return render_template("login.html")
-
-
-@app.route("/login", methods=["POST"])
-def login_user():
-    connection = get_flask_database_connection(app)
-    user_repository = UserRepository(connection)
-
-    username = request.form["user"]
-    password = request.form["password"]
-
-    # Check if user is in db and password matches
-    user_id = user_repository.verify_user_login(username, password)
-
-    # If the user can't be found:
-    if not user_id:
-        return render_template("login.html", errors="Incorrect login details")
-
-    session["user_id"] = user_id
-    session["logged_in"] = True
-
-    return redirect("/spaces")
-
-
-@app.route("/logout", methods=["GET"])
-def logout_user():
-    session["user_id"] = None
-    session["logged_in"] = False
-    return redirect(f"/spaces")
-
-
 @app.route("/manage_requests/host", methods=["GET"])
 def manage_booking_requests():
     connection = get_flask_database_connection(app)
@@ -203,8 +210,5 @@ def manage_booking_requests():
     )
 
 
-# These lines start the server if you run this file directly
-# They also start the server configured to use the test database
-# if started in test mode.
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
