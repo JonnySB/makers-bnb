@@ -114,44 +114,44 @@ def get_spaces():
     )
 
 
-@app.route("/spaces/new", methods=["GET"])
-def get_new_space():
-    connection = get_flask_database_connection(app)
-
-    logged_in = session.get("logged_in", False)
-    user_details = get_user_details(connection)
-
-    return render_template("spaces/new.html", logged_in=logged_in, user=user_details)
-
-
-@app.route("/spaces", methods=["POST"])
+@app.route("/spaces/new", methods=["GET", "POST"])
 def create_space():
-    connection = get_flask_database_connection(app)
-    space_repository = SpaceRepository(connection)
-    booking_repository = BookingRepository(connection)
+    if request.method == "GET":
+        connection = get_flask_database_connection(app)
 
-    name = request.form["name"]
-    description = request.form["description"]
-    price = request.form["price"]
-    available_from = request.form["available_from"]
-    available_to = request.form["available_to"]
+        logged_in = session.get("logged_in", False)
+        user_details = get_user_details(connection)
 
-    user_details = get_user_details(connection)
+        return render_template(
+            "spaces/new.html", logged_in=logged_in, user=user_details
+        )
 
-    space = Space(
-        None, name, description, price, user_details.id
-    )  # needs to include user_id once login functionality added
-    space = space_repository.create(space)
+    else:
+        connection = get_flask_database_connection(app)
+        space_repository = SpaceRepository(connection)
+        booking_repository = BookingRepository(connection)
 
-    available_from = datetime.strptime(available_from, "%Y-%m-%d")
-    available_to = datetime.strptime(available_to, "%Y-%m-%d")
-    current_date = available_from
-    while current_date <= available_to:
-        booking = Booking(None, current_date, True, space.id)
-        booking = booking_repository.create(booking)
-        current_date += timedelta(days=1)
+        name = request.form["name"]
+        description = request.form["description"]
+        price = request.form["price"]
+        available_from = request.form["available_from"]
+        available_to = request.form["available_to"]
 
-    return redirect(f"/spaces")
+        user_details = get_user_details(connection)
+
+        space = Space(None, name, description, price, user_details.id)
+        space = space_repository.create(space)
+
+        available_from = datetime.strptime(available_from, "%Y-%m-%d")
+        available_to = datetime.strptime(available_to, "%Y-%m-%d")
+        current_date = available_from
+
+        while current_date <= available_to:
+            booking = Booking(None, current_date, True, space.id)
+            booking = booking_repository.create(booking)
+            current_date += timedelta(days=1)
+
+        return redirect(f"/spaces")
 
 
 @app.route("/spaces/<id>", methods=["GET"])
@@ -186,7 +186,11 @@ def rent_space(booking_id, space_id):
 def manage_booking_requests():
     connection = get_flask_database_connection(app)
     booking_request_repository = BookingRequestRepository(connection)
-    booking_requests = booking_request_repository.get_by_host_id(1)
+
+    logged_in = session.get("logged_in", False)
+    user_details = get_user_details(connection)
+
+    booking_requests = booking_request_repository.get_by_host_id(user_details.id)
 
     users = UserRepository(connection)
     bookings = BookingRepository(connection)
@@ -201,7 +205,10 @@ def manage_booking_requests():
         booking_request_details.append([request, guest, booking, space, host])
 
     return render_template(
-        "manage_booking_requests.html", booking_requests=booking_request_details
+        "manage_booking_requests.html",
+        booking_requests=booking_request_details,
+        logged_in=logged_in,
+        user=user_details,
     )
 
 
