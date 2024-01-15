@@ -23,7 +23,7 @@ def get_user_details(connection):
     user_id = session.get("user_id", None)
     user_details = None
     if user_id != None:
-        user_details = user_repo.get_user_details(user_id)
+        user_details = user_repo.get_by_id(user_id)
     return user_details
 
 
@@ -49,11 +49,6 @@ def add_user_to_db():
     return redirect("/login")
 
 
-# @app.route("/login", methods=["GET"])
-# def render_login_page():
-#     return render_template("login.html")
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login_user():
     if request.method == "GET":
@@ -62,16 +57,16 @@ def login_user():
         connection = get_flask_database_connection(app)
         user_repository = UserRepository(connection)
 
-        username = request.form["user"]
+        username = request.form["user"]  # both username or email valid options
         password = request.form["password"]
 
-        # Check if user is in db and password matches
-        user_id = user_repository.verify_user_login(username, password)
+        # returns user_id if valid, False otherwise
+        user_id = user_repository.check_user_valid(username, password)
 
-        # If the user can't be found:
         if not user_id:
             return render_template("login.html", errors="Incorrect login details")
 
+        # update session variables to indicate logged in
         session["user_id"] = user_id
         session["logged_in"] = True
 
@@ -164,8 +159,8 @@ def get_space(id):
     connection = get_flask_database_connection(app)
     space_repo = SpaceRepository(connection)
     booking_repo = BookingRepository(connection)
-    space = space_repo.find(id)
-    bookings = booking_repo.get_by_id(id)
+    space = space_repo.get_by_id(id)
+    bookings = booking_repo.get_by_space_id(id)
 
     logged_in = session.get("logged_in", False)
     user_details = get_user_details(connection)
@@ -191,7 +186,7 @@ def rent_space(booking_id, space_id):
 def manage_booking_requests():
     connection = get_flask_database_connection(app)
     booking_request_repository = BookingRequestRepository(connection)
-    booking_requests = booking_request_repository.get_host_requests(1)
+    booking_requests = booking_request_repository.get_by_host_id(1)
 
     users = UserRepository(connection)
     bookings = BookingRepository(connection)
@@ -199,10 +194,10 @@ def manage_booking_requests():
 
     booking_request_details = []
     for request in booking_requests:
-        guest = users.get_user_details(request.guest_id)
+        guest = users.get_by_id(request.guest_id)
         booking = bookings.get_by_booking_id(request.booking_id)
-        space = spaces.find(booking.space_id)
-        host = users.get_user_details(space.user_id)
+        space = spaces.get_by_id(booking.space_id)
+        host = users.get_by_id(space.user_id)
         booking_request_details.append([request, guest, booking, space, host])
 
     return render_template(

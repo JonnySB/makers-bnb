@@ -5,7 +5,7 @@ class BookingRepository:
     def __init__(self, connection):
         self._connection = connection
 
-    def get_by_id(self, space_id):
+    def get_by_space_id(self, space_id):
         rows = self._connection.execute(
             "SELECT * FROM bookings WHERE space_id = %s ORDER BY id",
             [space_id],

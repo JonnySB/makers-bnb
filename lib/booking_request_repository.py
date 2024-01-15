@@ -5,7 +5,7 @@ class BookingRequestRepository:
     def __init__(self, db_connection):
         self._connection = db_connection
 
-    def get_host_requests(self, host_id):
+    def get_by_host_id(self, host_id):
         rows = self._connection.execute(
             "select booking_requests.id, booking_id, guest_id, booking_message, status from booking_requests "
             "join bookings on booking_id=bookings.id "
