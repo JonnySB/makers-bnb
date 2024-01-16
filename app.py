@@ -197,12 +197,12 @@ def manage_booking_requests():
     spaces = SpaceRepository(connection)
 
     booking_request_details = []
-    for request in booking_requests:
-        guest = users.get_by_id(request.guest_id)
-        booking = bookings.get_by_booking_id(request.booking_id)
+    for booking_request in booking_requests:
+        guest = users.get_by_id(booking_request.guest_id)
+        booking = bookings.get_by_booking_id(booking_request.booking_id)
         space = spaces.get_by_id(booking.space_id)
         host = users.get_by_id(space.user_id)
-        booking_request_details.append([request, guest, booking, space, host])
+        booking_request_details.append([booking_request, guest, booking, space, host])
 
     return render_template(
         "manage_booking_requests.html",

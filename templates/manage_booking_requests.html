@@ -126,23 +126,24 @@
           </tr>
         </thead>
         <tbody>
-          {% for request, guest, booking, space, host in booking_requests %}
+          {% for booking_request, guest, booking, space, host in
+          booking_requests %}
           <tr>
             <td>{{ space.name }}</td>
             <td>{{ guest.username }}</td>
             <td>{{ booking.date }}</td>
-            <td>{{ request.booking_message }}</td>
-            <td>{{ request.status }}</td>
+            <td>{{ booking_request.booking_message }}</td>
+            <td>{{ booking_request.status }}</td>
             <td class="action-buttons">
               <div>
                 <form
                   method="post"
-                  action="/manage_bookings/accept/{{request.booking_id}}"
+                  action="/manage_bookings/accept/{{booking_request.id}}"
                 >
                   <input
                     type="hidden"
-                    name="request.booking_id"
-                    value="{{ request.booking_id }}"
+                    name="booking_request.id"
+                    value="{{ booking_request.id }}"
                   />
                   <button type="submit" class="accept-button">Accept</button>
                 </form>
@@ -150,12 +151,12 @@
               <div>
                 <form
                   method="post"
-                  action="/manage_bookings/reject/{{request.booking_id}}"
+                  action="/manage_bookings/reject/{{booking_request.id}}"
                 >
                   <input
                     type="hidden"
-                    name="request.booking_id"
-                    value="{{ request.booking_id }}"
+                    name="booking_request.id"
+                    value="{{ booking_request.id }}"
                   />
                   <button type="submit" class="deny-button">Reject</button>
                 </form>
