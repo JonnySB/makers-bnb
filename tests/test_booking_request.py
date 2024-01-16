@@ -11,13 +11,13 @@ def test_initialises_with_given_attributes():
     assert date1.booking_id == 1
     assert date1.guest_id == 1
     assert date1.booking_message == "Please may I book!"
-    assert date1.status == "pending"
+    assert date1.status == "Pending"
 
 
 def test_update_status():
     date1 = BookingRequest(1, 1, 1, "Please may I book!", 1)
     date1.set_status(2)
-    assert date1.status == "accepted"
+    assert date1.status == "Accepted"
 
 
 def test_booking_eq():
@@ -28,4 +28,4 @@ def test_booking_eq():
 
 def test_booking_repr():
     date1 = BookingRequest(1, 1, 1, "Please may I book!", 1)
-    assert str(date1) == "BookingRequest: 1, 1, 1, Please may I book!, pending"
+    assert str(date1) == "BookingRequest: 1, 1, 1, Please may I book!, Pending"

@@ -126,12 +126,11 @@
           </tr>
         </thead>
         <tbody>
-          {% for booking_request, guest, booking, space, host in
-          booking_requests %}
+          {% for booking_request in booking_requests %}
           <tr>
-            <td>{{ space.name }}</td>
-            <td>{{ guest.username }}</td>
-            <td>{{ booking.date }}</td>
+            <td>{{ booking_request.space_name }}</td>
+            <td>{{ booking_request.guest_username }}</td>
+            <!-- <td>{{ booking_request.date }}</td> -->
             <td>{{ booking_request.booking_message }}</td>
             <td>{{ booking_request.status }}</td>
             <td class="action-buttons">

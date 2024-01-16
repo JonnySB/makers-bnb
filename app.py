@@ -1,6 +1,5 @@
 import os
 from flask import Flask, request, render_template, redirect, session
-from lib.booking_request_repository import BookingRequestRepository
 from lib.database_connection import get_flask_database_connection
 from lib.space_repository import *
 from lib.space import *
@@ -8,6 +7,7 @@ from lib.user_repository import UserRepository
 from lib.user import User
 from lib.booking_repository import BookingRepository
 from lib.booking import Booking
+from lib.booking_request_manager_repository import BookingRequestManagerRepository
 from datetime import datetime, timedelta
 
 # Create a new Flask app
@@ -185,28 +185,19 @@ def rent_space(booking_id, space_id):
 @app.route("/manage_requests/host", methods=["GET"])
 def manage_booking_requests():
     connection = get_flask_database_connection(app)
-    booking_request_repository = BookingRequestRepository(connection)
-
     logged_in = session.get("logged_in", False)
     user_details = get_user_details(connection)
 
-    booking_requests = booking_request_repository.get_by_host_id(user_details.id)
+    booking_request_manager_repository = BookingRequestManagerRepository(connection)
+    print(user_details)
 
-    users = UserRepository(connection)
-    bookings = BookingRepository(connection)
-    spaces = SpaceRepository(connection)
-
-    booking_request_details = []
-    for booking_request in booking_requests:
-        guest = users.get_by_id(booking_request.guest_id)
-        booking = bookings.get_by_booking_id(booking_request.booking_id)
-        space = spaces.get_by_id(booking.space_id)
-        host = users.get_by_id(space.user_id)
-        booking_request_details.append([booking_request, guest, booking, space, host])
+    booking_requests = booking_request_manager_repository.get_by_host_id(
+        user_details.id
+    )
 
     return render_template(
         "manage_booking_requests.html",
-        booking_requests=booking_request_details,
+        booking_requests=booking_requests,
         logged_in=logged_in,
         user=user_details,
     )

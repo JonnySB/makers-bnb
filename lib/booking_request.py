@@ -14,8 +14,8 @@ class BookingRequest:
 
     def set_status(self, status_num):
         if status_num == 1:
-            self.status = "pending"
+            self.status = "Pending"
         elif status_num == 2:
-            self.status = "accepted"
+            self.status = "Accepted"
         else:
-            self.status = "declined"
+            self.status = "Declined"
