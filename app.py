@@ -138,6 +138,9 @@ def create_space():
         available_to = request.form["available_to"]
 
         user_details = get_user_details(connection)
+        # redirect to login if session expires
+        if user_details is None:
+            return redirect("/login")
 
         space = Space(None, name, description, price, user_details.id)
         space = space_repository.create(space)
@@ -187,9 +190,11 @@ def manage_booking_requests():
     connection = get_flask_database_connection(app)
     logged_in = session.get("logged_in", False)
     user_details = get_user_details(connection)
+    # redirect to login if session expires
+    if user_details is None:
+        return redirect("/login")
 
     booking_request_manager_repository = BookingRequestManagerRepository(connection)
-    print(user_details)
 
     booking_requests = booking_request_manager_repository.get_by_host_id(
         user_details.id
