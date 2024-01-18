@@ -1,5 +1,7 @@
 import os
-from flask import Flask, request, render_template, redirect, session, url_for
+from flask import Flask, request, render_template, redirect, session
+from lib.booking_request import BookingRequest
+from lib.booking_request_repository import BookingRequestRepository
 from lib.database_connection import get_flask_database_connection
 from lib.space_repository import *
 from lib.space import *
@@ -8,7 +10,6 @@ from lib.user import User
 from lib.booking_repository import BookingRepository
 from lib.booking import Booking
 from lib.booking_request_manager_repository import BookingRequestManagerRepository
-from lib.booking_request_manager import BookingRequestManager
 from datetime import datetime, timedelta
 
 # Create a new Flask app
@@ -178,11 +179,39 @@ def get_space(id):
     )
 
 
-@app.route("/spaces/rent/<booking_id>/<space_id>", methods=["GET"])
+@app.route("/spaces/rent/<booking_id>/<space_id>", methods=["GET", "POST"])
 def rent_space(booking_id, space_id):
     connection = get_flask_database_connection(app)
-    booking_repo = BookingRepository(connection)
-    booking_repo.update_availability(booking_id)
+    logged_in = session.get("logged_in", False)
+    user_details = get_user_details(connection)
+    # redirect to login if session expires
+    if user_details is None:
+        return redirect("/login")
+
+    booking_details = {"booking_id": booking_id, "space_id": space_id}
+
+    if request.method == "GET":
+        return render_template(
+            "make_booking.html",
+            logged_in=logged_in,
+            user=user_details,
+            booking_details=booking_details,
+        )
+    else:
+        # create booking request object
+        booking_message = request.form["booking_message"]
+        booking_request = BookingRequest(
+            None, booking_id, user_details.id, booking_message, 1
+        )
+
+        # add to db
+        booking_request_repository = BookingRequestRepository(connection)
+        booking_request_repository.create(booking_request)
+
+        # potentially move the availability update to when request accepted
+        booking_repo = BookingRepository(connection)
+        booking_repo.update_availability(booking_id)
+
     return redirect(f"/spaces/{space_id}")
 
 

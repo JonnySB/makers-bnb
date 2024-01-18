@@ -27,3 +27,19 @@ class BookingRequestRepository:
             )
 
         return booking_requests
+
+    # UNTESTED
+    def create(self, booking_request):
+        self._connection.execute(
+            """
+            INSERT INTO booking_requests
+            (booking_id, guest_id, booking_message, status)
+            VALUES (%s, %s, %s, %s);
+            """,
+            [
+                booking_request.booking_id,
+                booking_request.guest_id,
+                booking_request.booking_message,
+                1,
+            ],
+        )
