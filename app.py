@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, render_template, redirect, session
+from flask import Flask, request, render_template, redirect, session, url_for
 from lib.database_connection import get_flask_database_connection
 from lib.space_repository import *
 from lib.space import *
@@ -8,6 +8,7 @@ from lib.user import User
 from lib.booking_repository import BookingRepository
 from lib.booking import Booking
 from lib.booking_request_manager_repository import BookingRequestManagerRepository
+from lib.booking_request_manager import BookingRequestManager
 from datetime import datetime, timedelta
 
 # Create a new Flask app
@@ -185,6 +186,7 @@ def rent_space(booking_id, space_id):
     return redirect(f"/spaces/{space_id}")
 
 
+# UNTESTED
 @app.route("/manage_requests/host", methods=["GET"])
 def manage_booking_requests():
     connection = get_flask_database_connection(app)
@@ -206,6 +208,45 @@ def manage_booking_requests():
         logged_in=logged_in,
         user=user_details,
     )
+
+
+# UNTESTED
+@app.route("/manage_bookings/accept/<booking_request_id>", methods=["POST"])
+def accept_booking_request(booking_request_id):
+    connection = get_flask_database_connection(app)
+    booking_req_man_repo = BookingRequestManagerRepository(connection)
+
+    boooking_request_manager = booking_req_man_repo.get_by_booking_request_id(
+        booking_request_id
+    )
+
+    all_related_booking_request_ids = (
+        booking_req_man_repo.get_all_related_booking_request_ids(
+            boooking_request_manager.booking_id
+        )
+    )
+
+    for id in all_related_booking_request_ids:
+        if str(id) == str(booking_request_id):
+            booking_req_man_repo.accept_booking(booking_request_id)
+        else:
+            booking_req_man_repo.reject_booking(id)
+
+    boooking_request_manager = booking_req_man_repo.get_by_booking_request_id(
+        booking_request_id
+    )
+
+    return redirect("/manage_requests/host")
+
+
+# UNTESTED
+@app.route("/manage_bookings/reject/<booking_request_id>", methods=["POST"])
+def reject_booking_request(booking_request_id):
+    connection = get_flask_database_connection(app)
+    booking_req_man_repo = BookingRequestManagerRepository(connection)
+    booking_req_man_repo.reject_booking(booking_request_id)
+
+    return redirect("/manage_requests/host")
 
 
 if __name__ == "__main__":
