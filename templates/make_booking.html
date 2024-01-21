@@ -45,9 +45,7 @@
             <a href="/spaces" class="nav-link px-2 link-secondary">Spaces</a>
           </li>
           <li>
-            <a href="/manage_requests/host" class="nav-link px-2"
-              >My Bookings</a
-            >
+            <a href="/manage_requests/host" class="nav-link px-2">My Bookings</a>
           </li>
         </ul>
         {% if not logged_in %}
@@ -78,67 +76,32 @@
     <div class="b-example-divider"></div>
 
     <div class="my-5 text-center">
-      <h1 class="display-5 fw-bold text-body-emphasis">List a Space</h1>
+      <h1 class="display-5 fw-bold text-body-emphasis">
+        Make a booking request
+      </h1>
     </div>
-    <form action="/spaces/new" method="post">
+        <form action="/spaces/rent/{{booking_details.booking_id}}/{{booking_details.space_id}}" method="post">
       <div class="container w-75">
         <div class="row p-5 align-items-center rounded-3 border">
           <div class="row g-1">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" name="name" id="name" />
-          </div>
-
-          <div class="row g-1">
-            <label for="description" class="form-label">Description</label>
+            <label for="booking_message" class="form-label"
+              >Please leave a booking message for your host:</label
+            >
             <input
               type="text"
               class="form-control"
-              name="description"
-              id="description"
+              name="booking_message"
+              id="booking_message"
             />
           </div>
 
-          <div class="row g-1">
-            <label for="name" class="form-label">Price per night</label>
-            <div class="input-group">
-              <span class="input-group-text">£</span>
-              <input type="text" class="form-control" name="price" id="price" />
-            </div>
-          </div>
-
-          <div class="row g-1">
-            <label for="available_from" class="form-label"
-              >Available from</label
-            >
-            <input
-              type="date"
-              class="form-control"
-              name="available_from"
-              id="available_from"
-            />
-          </div>
-
-          <div class="row g-1">
-            <label for="available_to" class="form-label">Available to</label>
-            <input
-              type="date"
-              class="form-control"
-              name="available_to"
-              id="available_to"
-            />
-          </div>
-        </div>
-        <!-- <p>
-                <input type="submit" value="List my space">
-            </p> -->
-        <p></p>
         <div class="container my-5">
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
             <button
               type="submit"
               class="btn btn-primary btn-lg px-4 gap-3 t-list-space"
             >
-              List a space
+              Submit booking request
             </button>
           </div>
         </div>

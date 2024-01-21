@@ -61,7 +61,7 @@ def test_get_single_space(db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     repository = SpaceRepository(db_connection)
 
-    space3 = repository.find(3)
+    space3 = repository.get_by_id(3)
     assert space3 == Space(
         3,
         "Sunset Serenity Cottage",
