@@ -25,7 +25,7 @@ def get_user_details(connection):
     user_id = session.get("user_id", None)
     user_details = None
     if user_id != None:
-        user_details = user_repo.get_by_id(user_id)
+        user_details = user_repo.get_user_by_id(user_id)
     return user_details
 
 
@@ -47,7 +47,7 @@ def add_user_to_db():
 
     user = User(None, username, email, password)
 
-    user = user_repository.create(user)
+    user = user_repository.add_user_to_db(user)
     return redirect("/login")
 
 
@@ -63,7 +63,7 @@ def login_user():
         password = request.form["password"]
 
         # returns user_id if valid, False otherwise
-        user_id = user_repository.check_user_valid(username, password)
+        user_id = user_repository.check_username_or_email_and_password(username, password)
 
         if not user_id:
             return render_template("login.html", errors="Incorrect login details")
@@ -106,7 +106,7 @@ def get_spaces():
     connection = get_flask_database_connection(app)
     space_repo = SpaceRepository(connection)
 
-    spaces = space_repo.all()
+    spaces = space_repo.get_all_spaces()
 
     logged_in = session.get("logged_in", False)
     user_details = get_user_details(connection)
@@ -145,7 +145,7 @@ def create_space():
             return redirect("/login")
 
         space = Space(None, name, description, price, user_details.id)
-        space = space_repository.create(space)
+        space = space_repository.add_space_to_db(space)
 
         available_from = datetime.strptime(available_from, "%Y-%m-%d")
         available_to = datetime.strptime(available_to, "%Y-%m-%d")
@@ -164,7 +164,7 @@ def get_space(id):
     connection = get_flask_database_connection(app)
     space_repo = SpaceRepository(connection)
     booking_repo = BookingRepository(connection)
-    space = space_repo.get_by_id(id)
+    space = space_repo.get_space_by_id(id)
     bookings = booking_repo.get_bookings_by_space_id(id)
 
     logged_in = session.get("logged_in", False)

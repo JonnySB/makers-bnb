@@ -1,5 +1,5 @@
 class Booking:
-    def __init__(self, id, date, is_available, space_id):
+    def __init__(self, id: int, date, is_available: bool, space_id: int):
         self.id = id
         self.date = date
         self.is_available = is_available

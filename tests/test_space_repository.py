@@ -1,17 +1,13 @@
 from lib.space_repository import SpaceRepository
 from lib.space import Space
 
-"""
-When I call #all,
-I get all the spaces in the spaces table
-"""
 
-
+# test when called all spaces are returned
 def test_get_all_spaces(db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     repository = SpaceRepository(db_connection)
 
-    spaces = repository.all()
+    spaces = repository.get_all_spaces()
     assert spaces == [
         Space(
             1,
@@ -51,17 +47,13 @@ def test_get_all_spaces(db_connection):
     ]
 
 
-"""
-When i call #find(id)
-I get a specific space by the id
-"""
-
-
-def test_get_single_space(db_connection):
+# test that a single space, with the corresponding info, is returned when called
+# with a certain space id.
+def test_get_space_by_id(db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     repository = SpaceRepository(db_connection)
 
-    space3 = repository.get_by_id(3)
+    space3 = repository.get_space_by_id(3)
     assert space3 == Space(
         3,
         "Sunset Serenity Cottage",
@@ -71,19 +63,15 @@ def test_get_single_space(db_connection):
     )
 
 
-"""
-When I call #create
-I create a space in the spaces table
-and can see it back in #all
-"""
-
-
-def test_create_space(db_connection):
+# Test a space is created in the database when called.
+def test_add_space_to_db(db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     repository = SpaceRepository(db_connection)
-    space = Space(None, "Test Name", "Test Description", 50.5, 5)
-    repository.create(space)
-    assert repository.all() == [
+
+    # id will be overwritten by corresponding database id
+    space = Space(1, "Test Name", "Test Description", 50.5, 5)
+    repository.add_space_to_db(space)
+    assert repository.get_all_spaces() == [
         Space(
             1,
             "Enchanted Retreat",
