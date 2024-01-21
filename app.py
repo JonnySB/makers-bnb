@@ -153,7 +153,7 @@ def create_space():
 
         while current_date <= available_to:
             booking = Booking(None, current_date, True, space.id)
-            booking = booking_repository.create(booking)
+            booking = booking_repository.add_booking_to_db(booking)
             current_date += timedelta(days=1)
 
         return redirect(f"/spaces")
@@ -165,7 +165,7 @@ def get_space(id):
     space_repo = SpaceRepository(connection)
     booking_repo = BookingRepository(connection)
     space = space_repo.get_by_id(id)
-    bookings = booking_repo.get_by_space_id(id)
+    bookings = booking_repo.get_bookings_by_space_id(id)
 
     logged_in = session.get("logged_in", False)
     user_details = get_user_details(connection)
@@ -210,7 +210,7 @@ def rent_space(booking_id, space_id):
 
         # potentially move the availability update to when request accepted
         booking_repo = BookingRepository(connection)
-        booking_repo.update_availability(booking_id)
+        booking_repo.set_booking_availability_to_false(booking_id)
 
     return redirect(f"/spaces/{space_id}")
 
