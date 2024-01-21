@@ -4,7 +4,7 @@ from lib.booking_request_repository import BookingRequestRepository
 
 # tests that when called with a particular host_id, the associated booking
 # requests are returned as BookingRequest objects.
-def test_get_host_requests(db_connection):
+def test_get_booking_request_by_host_id(db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     booking_request_repo = BookingRequestRepository(db_connection)
 
@@ -18,7 +18,7 @@ def test_get_host_requests(db_connection):
 
 # tests that when called with a BookingRequests object, an associated record is
 # created in the booking_requests table of the database
-def test_add_booking_to_db(db_connection):
+def test_add_booking_request_to_db(db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     booking_request_repo = BookingRequestRepository(db_connection)
 

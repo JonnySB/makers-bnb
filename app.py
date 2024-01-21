@@ -227,7 +227,7 @@ def manage_booking_requests():
 
     booking_request_manager_repository = BookingRequestManagerRepository(connection)
 
-    booking_requests = booking_request_manager_repository.get_by_host_id(
+    booking_requests = booking_request_manager_repository.get_BRM_by_host_id(
         user_details.id
     )
 
@@ -245,23 +245,23 @@ def accept_booking_request(booking_request_id):
     connection = get_flask_database_connection(app)
     booking_req_man_repo = BookingRequestManagerRepository(connection)
 
-    boooking_request_manager = booking_req_man_repo.get_by_booking_request_id(
+    boooking_request_manager = booking_req_man_repo.get_BRM_by_booking_request_id(
         booking_request_id
     )
 
     all_related_booking_request_ids = (
-        booking_req_man_repo.get_all_related_booking_request_ids(
+        booking_req_man_repo.get_booking_request_ids_by_booking_id(
             boooking_request_manager.booking_id
         )
     )
 
     for id in all_related_booking_request_ids:
         if str(id) == str(booking_request_id):
-            booking_req_man_repo.accept_booking(booking_request_id)
+            booking_req_man_repo.set_booking_request_status_to_accepted(booking_request_id)
         else:
-            booking_req_man_repo.reject_booking(id)
+            booking_req_man_repo.set_booking_request_status_to_declined(id)
 
-    boooking_request_manager = booking_req_man_repo.get_by_booking_request_id(
+    boooking_request_manager = booking_req_man_repo.get_BRM_by_booking_request_id(
         booking_request_id
     )
 
@@ -273,7 +273,7 @@ def accept_booking_request(booking_request_id):
 def reject_booking_request(booking_request_id):
     connection = get_flask_database_connection(app)
     booking_req_man_repo = BookingRequestManagerRepository(connection)
-    booking_req_man_repo.reject_booking(booking_request_id)
+    booking_req_man_repo.set_booking_request_status_to_declined(booking_request_id)
 
     return redirect("/manage_requests/host")
 
