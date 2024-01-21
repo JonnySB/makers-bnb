@@ -1,6 +1,6 @@
 class Space:
     def __init__(
-        self, id: int, name: str, description: str, price: float, user_id: int
+        self, id: int | None, name: str, description: str, price: float, user_id: int
     ):
         self.id = id
         self.name = name

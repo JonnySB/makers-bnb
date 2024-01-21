@@ -1,7 +1,7 @@
 class BookingRequest:
     def __init__(
         self,
-        id: int,
+        id: int | None,
         booking_id: int,
         guest_id: int,
         booking_message: str,

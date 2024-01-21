@@ -2,7 +2,7 @@ import bcrypt
 
 
 class User:
-    def __init__(self, id: int, username: str, email: str, password: str):
+    def __init__(self, id: int | None, username: str, email: str, password: str):
         self.id = id
         self.username = username
         self.email = email

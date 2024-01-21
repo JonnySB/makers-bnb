@@ -84,9 +84,14 @@
             <label for="confirm_password">Confirm Password</label>
             <input type="password" name="confirm_password" id="confirm_password" class="form-control" required />
             <br>
+        <p class="text-center text-danger">
+                {% if errors %}
+                {{ errors }}
+                {% endif %}
+        </p>
             <input type="submit" value="Sign Up" class="btn btn-primary" />
         </form>
-        <a href="/login">Already a user? Sign in here</a>
+        <a class=".test" href="/login">Already a user? Sign in here</a>
     </div>
 
     <div class="b-example-divider"></div>

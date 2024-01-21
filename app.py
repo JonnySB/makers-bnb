@@ -1,14 +1,14 @@
 import os
 from flask import Flask, request, render_template, redirect, session
+from lib.database_connection import get_flask_database_connection
+from lib.space import *
+from lib.space_repository import *
 from lib.booking_request import BookingRequest
 from lib.booking_request_repository import BookingRequestRepository
-from lib.database_connection import get_flask_database_connection
-from lib.space_repository import *
-from lib.space import *
-from lib.user_repository import UserRepository
 from lib.user import User
-from lib.booking_repository import BookingRepository
+from lib.user_repository import UserRepository
 from lib.booking import Booking
+from lib.booking_repository import BookingRepository
 from lib.booking_request_manager_repository import BookingRequestManagerRepository
 from datetime import datetime, timedelta
 
@@ -19,22 +19,32 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
 
-# == Helper Methods ==
-def get_user_details(connection):
-    user_repo = UserRepository(connection)
+# == HELPER METHODS ==
+
+
+# Gets user id from active session and used it to return corresponding User
+# object. If user session not active, return None
+def get_user_from_session_details(connection) -> User | None:
+    user_repository = UserRepository(connection)
     user_id = session.get("user_id", None)
-    user_details = None
+    user = None
     if user_id != None:
-        user_details = user_repo.get_user_by_id(user_id)
-    return user_details
+        user = user_repository.get_user_by_id(user_id)
+    return user
 
 
-# == User Create / Login / Logout Routes ==
+# == USER CREATE / LOGIN / LOGOUT ROUTES ==
+
+
+# render signup template
 @app.route("/signup", methods=["GET"])
 def get_user_info():
     return render_template("user_signup.html")
 
 
+# If signup template completed correctly (password correctly confirmed), create
+# user, add to database and redirect to login page. If passwords not confirmed
+# then re-render user_signup template with associated error message.
 @app.route("/add_user", methods=["POST"])
 def add_user_to_db():
     connection = get_flask_database_connection(app)
@@ -43,14 +53,21 @@ def add_user_to_db():
     username = request.form["username"]
     email = request.form["email"]
     password = request.form["password"]
-    # confirm_password
+    confirm_password = request.form["confirm_password"]
+    if password == confirm_password:
+        # user id will be overwritten by db id
+        user = User(1, username, email, password)
+        user = user_repository.add_user_to_db(user)
+        return redirect("/login")
+    else:
+        return render_template(
+            "user_signup.html", errors="Please ensure your details are correct"
+        )
 
-    user = User(None, username, email, password)
 
-    user = user_repository.add_user_to_db(user)
-    return redirect("/login")
-
-
+# If 'GET', render login template and collect details.
+# if 'POST', check details and create session with associated user_id and
+# logged_in bool, and then redirect to spaces
 @app.route("/login", methods=["GET", "POST"])
 def login_user():
     if request.method == "GET":
@@ -63,7 +80,9 @@ def login_user():
         password = request.form["password"]
 
         # returns user_id if valid, False otherwise
-        user_id = user_repository.check_username_or_email_and_password(username, password)
+        user_id = user_repository.check_username_or_email_and_password(
+            username, password
+        )
 
         if not user_id:
             return render_template("login.html", errors="Incorrect login details")
@@ -75,14 +94,12 @@ def login_user():
         return redirect("/spaces")
 
 
+# log user out and redirect to spaces
 @app.route("/logout", methods=["GET"])
 def logout_user():
     session["user_id"] = None
     session["logged_in"] = False
     return redirect(f"/spaces")
-
-
-# == unauthenticated routes ==
 
 
 # for development purposes only - easy reseeding:
@@ -100,7 +117,8 @@ def set_default_route():
     return redirect("/spaces")
 
 
-# Homepage
+# Render homepage (spaces), with additional session/ user information if
+# logged in
 @app.route("/spaces", methods=["GET"])
 def get_spaces():
     connection = get_flask_database_connection(app)
@@ -109,24 +127,29 @@ def get_spaces():
     spaces = space_repo.get_all_spaces()
 
     logged_in = session.get("logged_in", False)
-    user_details = get_user_details(connection)
+    user = get_user_from_session_details(connection)
 
     return render_template(
-        "spaces/spaces.html", spaces=spaces, logged_in=logged_in, user=user_details
+        "spaces/spaces.html", spaces=spaces, logged_in=logged_in, user=user
     )
 
 
+# See inside route for GET/ POST
+# If GET - Render new space form if user logged in, otherwise redirect to signup
+# If POST - extract space / booking information and add records to db
 @app.route("/spaces/new", methods=["GET", "POST"])
 def create_space():
     if request.method == "GET":
         connection = get_flask_database_connection(app)
 
         logged_in = session.get("logged_in", False)
-        user_details = get_user_details(connection)
+        # ensure user logged in if visits by link
+        if not logged_in:
+            return redirect("/signup")
 
-        return render_template(
-            "spaces/new.html", logged_in=logged_in, user=user_details
-        )
+        user = get_user_from_session_details(connection)
+
+        return render_template("spaces/new.html", logged_in=logged_in, user=user)
 
     else:
         connection = get_flask_database_connection(app)
@@ -139,12 +162,12 @@ def create_space():
         available_from = request.form["available_from"]
         available_to = request.form["available_to"]
 
-        user_details = get_user_details(connection)
+        user = get_user_from_session_details(connection)
         # redirect to login if session expires
-        if user_details is None:
+        if user is None:
             return redirect("/login")
 
-        space = Space(None, name, description, price, user_details.id)
+        space = Space(None, name, description, float(price), user.id)
         space = space_repository.add_space_to_db(space)
 
         available_from = datetime.strptime(available_from, "%Y-%m-%d")
@@ -159,6 +182,7 @@ def create_space():
         return redirect(f"/spaces")
 
 
+# Render associated space details template
 @app.route("/spaces/<id>", methods=["GET"])
 def get_space(id):
     connection = get_flask_database_connection(app)
@@ -168,7 +192,7 @@ def get_space(id):
     bookings = booking_repo.get_bookings_by_space_id(id)
 
     logged_in = session.get("logged_in", False)
-    user_details = get_user_details(connection)
+    user_details = get_user_from_session_details(connection)
 
     return render_template(
         "space.html",
@@ -179,14 +203,18 @@ def get_space(id):
     )
 
 
+# If GET - check logged in and render make booking template
+# If POST - get booking message from previous form and add booking request to
+# db. Set booking availability to False and redirect to homepage (spaces)
 @app.route("/spaces/rent/<booking_id>/<space_id>", methods=["GET", "POST"])
 def rent_space(booking_id, space_id):
     connection = get_flask_database_connection(app)
     logged_in = session.get("logged_in", False)
-    user_details = get_user_details(connection)
-    # redirect to login if session expires
-    if user_details is None:
+
+    # url cannot be called directly when not logged in
+    if not logged_in:
         return redirect("/login")
+    user_details = get_user_from_session_details(connection)
 
     booking_details = {"booking_id": booking_id, "space_id": space_id}
 
@@ -198,7 +226,6 @@ def rent_space(booking_id, space_id):
             booking_details=booking_details,
         )
     else:
-        # create booking request object
         booking_message = request.form["booking_message"]
         booking_request = BookingRequest(
             None, booking_id, user_details.id, booking_message, 1
@@ -220,7 +247,7 @@ def rent_space(booking_id, space_id):
 def manage_booking_requests():
     connection = get_flask_database_connection(app)
     logged_in = session.get("logged_in", False)
-    user_details = get_user_details(connection)
+    user_details = get_user_from_session_details(connection)
     # redirect to login if session expires
     if user_details is None:
         return redirect("/login")
@@ -257,7 +284,9 @@ def accept_booking_request(booking_request_id):
 
     for id in all_related_booking_request_ids:
         if str(id) == str(booking_request_id):
-            booking_req_man_repo.set_booking_request_status_to_accepted(booking_request_id)
+            booking_req_man_repo.set_booking_request_status_to_accepted(
+                booking_request_id
+            )
         else:
             booking_req_man_repo.set_booking_request_status_to_declined(id)
 

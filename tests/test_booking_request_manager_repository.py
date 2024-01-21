@@ -117,7 +117,7 @@ def test_set_booking_request_status_to_accepted(db_connection):
 
 # tests that when called with a particular booking_request_id, the
 # booking_request.status is updated to '3' (declined) in the database
-def test_set_booking_request_status_to_declined(db_connection):
+def test_set_booking_request_status_to_(db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     booking_request_repo = BookingRequestManagerRepository(db_connection)
 

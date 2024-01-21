@@ -135,7 +135,7 @@
           >
             <div class="d-flex gap-2 w-100 justify-content-between">
               <div>
-                <h6 class="mb-0 t-space-date">{{ booking.date }}</h6>
+                <h6 class="mb-0 t-space-date available">{{ booking.date }}</h6>
                 <p class="mb-0 opacity-75 t-space-availability">Available</p>
               </div>
               <small class="opacity-50 text-nowrap">Click to Rent</small>
@@ -151,7 +151,9 @@
           >
             <div class="d-flex gap-2 w-100 justify-content-between">
               <div>
-                <h6 class="mb-0 t-space-date">{{ booking.date }}</h6>
+                <h6 class="mb-0 t-space-date unavailable">
+                  {{ booking.date }}
+                </h6>
                 <p class="mb-0 opacity-75 t-space-availability">Unavailable</p>
               </div>
             </div>
@@ -177,10 +179,7 @@
                     aria-label="Close"
                   ></button>
                 </div>
-                <div class="modal-body">
-                  This date is unfortunately unavailable to book. Try booking an
-                  available date.
-                </div>
+                <div class="modal-body">This date has already been booked!</div>
               </div>
             </div>
           </div>

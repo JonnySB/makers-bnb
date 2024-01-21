@@ -1,15 +1,18 @@
+from datetime import date
+
+
 class BookingRequestManager:
     def __init__(
         self,
-        booking_request_id,
-        booking_id,
-        space_name,
-        guest_id,
-        guest_username,
-        booking_date,
-        booking_message,
-        status_num,
-        host_id,
+        booking_request_id: int,
+        booking_id: int,
+        space_name: str,
+        guest_id: int,
+        guest_username: str,
+        booking_date: date,
+        booking_message: str,
+        status_num: int,
+        host_id: int,
     ):
         self.booking_request_id = booking_request_id
         self.booking_id = booking_id

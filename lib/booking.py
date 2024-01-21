@@ -1,5 +1,8 @@
+from datetime import date
+
+
 class Booking:
-    def __init__(self, id: int, date, is_available: bool, space_id: int):
+    def __init__(self, id: int | None, date: date, is_available: bool, space_id: int):
         self.id = id
         self.date = date
         self.is_available = is_available
