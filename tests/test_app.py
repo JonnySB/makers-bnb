@@ -1,14 +1,10 @@
 from playwright.sync_api import Page, expect
 from lib.user_repository import UserRepository
 from lib.user import User
-import pytest
-
-"""
-When I call GET /spaces
-I get a list of spaces back
-"""
+from app import *
 
 
+# test spaces elements are rendered correctly on spaces page
 def test_get_spaces(page, test_web_address, db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     page.goto(f"http://{test_web_address}/spaces")
@@ -36,13 +32,9 @@ def test_get_spaces(page, test_web_address, db_connection):
     expect(price_element).to_have_text(["£130.00/ night" for _ in range(5)])
 
 
-"""
-When we click on space 3's details
-We see the info for that space including a list of booking dates
-And can book a certain date
-"""
-
-def test_details_page(page, test_web_address, db_connection):
+# test that when space 3's details are clicked, we see the correct infomation
+# for that space rendered on a details page
+def test_view_space_details_page(page, test_web_address, db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     page.goto(f"http://{test_web_address}/spaces")
     page.click("a[href='/spaces/3']")
@@ -60,21 +52,15 @@ def test_details_page(page, test_web_address, db_connection):
     expect(availability_element).to_have_text(["Available", "Available", "Available"])
 
 
-"""
-When we create a new space
-We see it in the /spaces index
-And can see the dates listed on the details page
-"""
-
-
-# @pytest.mark.skip()
+# Test that when a new space is created, the associated space is then rendered
+# on the spaces page.
 def test_create_space(page, test_web_address, db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     page.goto(f"http://{test_web_address}/login")
     page.fill("input[name='user']", "user1")
     page.fill("input[name='password']", "Password")
     page.click("input[type='submit']")
-    #page.goto(f"http://{test_web_address}/spaces/new")
+    # page.goto(f"http://{test_web_address}/spaces/new")
     page.click("a[href='/spaces/new']")
     page.fill("input[name='name']", "Test Name")
     page.fill("input[name='description']", "Test Description")
@@ -115,12 +101,8 @@ def test_create_space(page, test_web_address, db_connection):
     )
 
 
-"""
-When we create a user
-We see it in the users table
-"""
-
-
+# Test when a user is created, that the user is then created in the users table
+# of the db
 def test_create_user(page, test_web_address, db_connection):
     db_connection.seed("seeds/makers_bnb.sql")
     page.goto(f"http://{test_web_address}/signup")
@@ -134,7 +116,7 @@ def test_create_user(page, test_web_address, db_connection):
 
     repository = UserRepository(db_connection)
 
-    users = repository.all()
+    users = repository.get_all_users()
     assert users == [
         User(1, "user1", "user1@user.com", "Password"),
         User(2, "user2", "user2@user.com", "Password"),
@@ -143,3 +125,71 @@ def test_create_user(page, test_web_address, db_connection):
         User(5, "user5", "user5@user.com", "Password"),
         User(6, "user6", "user6@user.com", "Password"),
     ]
+
+
+# test user is able to login and view their booking requests from a host
+# perspective
+def test_login_and_view_booking_requests(page, test_web_address, db_connection):
+    db_connection.seed("seeds/makers_bnb.sql")
+    page.goto(f"http://{test_web_address}/spaces")
+    page.click("text=My Bookings")
+    page.fill("input[name=user]", "user1")
+    page.fill("input[name=password]", "Password")
+    page.click("text='Sign In'")
+    page.click("text=My Bookings")
+    booking_messages = page.locator("td.testing-locator")
+    expect(booking_messages).to_have_text([])
+
+
+# test user is able to login and view their booking requests from a host
+# perspective and accept a booking
+def test_accept_booking_request(page, test_web_address, db_connection):
+    db_connection.seed("seeds/makers_bnb.sql")
+    page.goto(f"http://{test_web_address}/spaces")
+    page.click("text=My Bookings")
+    page.fill("input[name=user]", "user1")
+    page.fill("input[name=password]", "Password")
+    page.click("text='Sign In'")
+    page.click("text=My Bookings")
+
+    page.click("text='Accept'")
+    accepted_username = page.locator("td.accepted-guest-username")
+    expect(accepted_username).to_have_text("user1")
+
+
+# test user is able to login and view their booking requests from a host
+# perspective and accept a booking
+def test_decline_booking_request(page, test_web_address, db_connection):
+    db_connection.seed("seeds/makers_bnb.sql")
+    page.goto(f"http://{test_web_address}/spaces")
+    page.click("text=My Bookings")
+    page.fill("input[name=user]", "user1")
+    page.fill("input[name=password]", "Password")
+    page.click("text='Sign In'")
+    page.click("text=My Bookings")
+
+    page.click("text='Reject'")
+    rejected_username = page.locator("td.rejected-guest-username")
+    expect(rejected_username).to_have_text("user1")
+
+
+# test user is able to login and make booking request as a guest
+def test_make_booking_request(page, test_web_address, db_connection):
+    db_connection.seed("seeds/makers_bnb.sql")
+    page.goto(f"http://{test_web_address}/spaces")
+    page.click("text=My Bookings")
+    page.fill("input[name=user]", "user1")
+    page.fill("input[name=password]", "Password")
+    page.click("text='Sign In'")
+
+    page.click("a[href='/spaces/1']")
+    available_date = page.locator("h6.available")
+    expect(available_date).to_have_text("2024-05-10")
+
+    page.click("h6.available")
+
+    page.fill("input[name=booking_message]", "Please can I stay?")
+    page.click("text='Submit booking request'")
+
+    unavailable_date = page.locator("h6.unavailable")
+    expect(unavailable_date).to_have_text(["2024-05-10", "2024-05-11", "2024-05-12"])
