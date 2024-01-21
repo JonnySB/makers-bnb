@@ -28,19 +28,19 @@ def test_booking_repr():
 # test status is set to 'Pending' if passed 1
 def test_set_status_to_pending():
     date1 = BookingRequest(1, 1, 1, "Please may I book!", 1)
-    date1.set_status(1)
+    date1.convert_status_num_to_str_repr(1)
     assert date1.status == "Pending"
 
 
 # test status is set to 'Accepted' if passed 2
 def test_set_status_to_accepted():
     date1 = BookingRequest(1, 1, 1, "Please may I book!", 1)
-    date1.set_status(2)
+    date1.convert_status_num_to_str_repr(2)
     assert date1.status == "Accepted"
 
 
 # test status is set to 'Declined' if passed 3
 def test_set_status_to_declined():
     date1 = BookingRequest(1, 1, 1, "Declined", 1)
-    date1.set_status(3)
+    date1.convert_status_num_to_str_repr(3)
     assert date1.status == "Declined"
