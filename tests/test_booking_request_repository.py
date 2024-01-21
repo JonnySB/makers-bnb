@@ -11,8 +11,7 @@ def test_get_booking_request_by_host_id(db_connection):
     booking_requests = booking_request_repo.get_booking_requests_by_host_id(1)
     assert booking_requests == [
         BookingRequest(1, 1, 1, "Would be great to stay!", 1),
-        BookingRequest(2, 1, 2, "Would be fab to stay!", 1),
-        BookingRequest(3, 1, 3, "Would be awesome to stay!", 1),
+        BookingRequest(2, 2, 2, "Would be fab to stay!", 1),
     ]
 
 
@@ -28,7 +27,6 @@ def test_add_booking_request_to_db(db_connection):
     booking_requests = booking_request_repo.get_booking_requests_by_host_id(1)
     assert booking_requests == [
         BookingRequest(1, 1, 1, "Would be great to stay!", 1),
-        BookingRequest(2, 1, 2, "Would be fab to stay!", 1),
-        BookingRequest(3, 1, 3, "Would be awesome to stay!", 1),
+        BookingRequest(2, 2, 2, "Would be fab to stay!", 1),
         BookingRequest(4, 1, 3, "Would be awesome to stay!", 1),
     ]

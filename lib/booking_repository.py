@@ -37,6 +37,17 @@ class BookingRepository:
             [booking_id],
         )
 
+    # Using a booking_id, set a bookings availability to false in the database
+    def set_booking_availability_to_true(self, booking_id: int):
+        self._connection.execute(
+            """
+            UPDATE bookings
+            SET is_available = TRUE
+            WHERE id = %s
+            """,
+            [booking_id],
+        )
+
     # Insert booking details into bookings table of database
     # return Booking object with updated id
     def add_booking_to_db(self, booking: Booking) -> Booking:

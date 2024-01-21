@@ -58,6 +58,15 @@
           inset 0 0.5em 1.5em rgba(0, 0, 0, 0.1),
           inset 0 0.125em 0.5em rgba(0, 0, 0, 0.15);
       }
+
+      .button-container {
+        text-align: center;
+        margin-top: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* Set the height to match the logo height */
+      }
     </style>
   </head>
 
@@ -114,29 +123,30 @@
     <div class="b-example-divider"></div>
 
     <div class="container">
-      <br />
-      <a href="/manage_requests/host">
-        <button type="button" class="btn btn-primary btn-sm">
-          My host requests
-        </button>
-      </a>
-      <a href="/manage_requests/guest">
-        <button type="button" class="btn btn-secondary btn-sm">
-          My guest requests
-        </button>
-      </a>
+      <div class="button-container">
+        <br />
+        <a href="/manage_requests/host" style="padding-right: 15px">
+          <button type="button" class="btn btn-secondary">
+            My host requests
+          </button>
+        </a>
+        <a href="/manage_requests/guest">
+          <button type="button" class="btn btn-primary">
+            My guest requests
+          </button>
+        </a>
+      </div>
 
       <table class="table .table-sm">
         <thead>
           <tr>
             <th class="text-center">Booking Status</th>
             <th>Space Name</th>
-            <th>Guest</th>
             <th>Date</th>
-            <th>Booking Message</th>
             <th>Action</th>
           </tr>
         </thead>
+
         <tbody>
           {% for booking_request in booking_requests %} {% if
           booking_request.status == "Pending" %}
@@ -157,41 +167,26 @@
               </svg>
             </td>
             <td>{{ booking_request.space_name }}</td>
-            <td>{{ booking_request.guest_username }}</td>
             <td>{{ booking_request.booking_date }}</td>
-            <td class=".testing_locator">
-              {{ booking_request.booking_message }}
-            </td>
             <td class="action-buttons">
               <div>
                 <form
                   method="post"
-                  action="/manage_bookings/accept/{{booking_request.booking_request_id}}"
+                  action="/manage_bookings/cancel_request/{{booking_request.booking_request_id}}"
                 >
                   <input
                     type="hidden"
                     name="booking_request.booking_request_id"
                     value="{{ booking_request.booking_request_id }}"
                   />
-                  <button type="submit" class="accept-button">Accept</button>
-                </form>
-              </div>
-              <div>
-                <form
-                  method="post"
-                  action="/manage_bookings/reject/{{booking_request.booking_request_id}}"
-                >
-                  <input
-                    type="hidden"
-                    name="booking_request.booking_request_id"
-                    value="{{ booking_request.booking_request_id }}"
-                  />
-                  <button type="submit" class="deny-button">Reject</button>
+                  <button type="submit" class="deny-button">
+                    Cancel Booking Request
+                  </button>
                 </form>
               </div>
             </td>
           </tr>
-          {% elif booking_request.status == "Accepted"%}
+          {% elif booking_request.status == "Accepted" %}
           <tr>
             <td class="text-center">
               <svg
@@ -208,25 +203,21 @@
               </svg>
             </td>
             <td>{{ booking_request.space_name }}</td>
-            <td class="accepted-guest-username">
-              {{ booking_request.guest_username }}
-            </td>
             <td>{{ booking_request.booking_date }}</td>
-            <td class="testing-locator">
-              {{ booking_request.booking_message }}
-            </td>
             <td class="action-buttons">
               <div>
                 <form
                   method="post"
-                  action="/manage_bookings/reject/{{booking_request.booking_request_id}}"
+                  action="/manage_bookings/cancel_request/{{booking_request.booking_request_id}}"
                 >
                   <input
                     type="hidden"
                     name="booking_request.booking_request_id"
                     value="{{ booking_request.booking_request_id }}"
                   />
-                  <button type="submit" class="deny-button">Cancel</button>
+                  <button type="submit" class="deny-button">
+                    Cancel Booking Request
+                  </button>
                 </form>
               </div>
             </td>
@@ -248,16 +239,12 @@
                 />
               </svg>
             </td>
+
             <td class="text-muted">{{ booking_request.space_name }}</td>
-            <td class="text-muted rejected-guest-username">
-              {{ booking_request.guest_username }}
-            </td>
             <td class="text-muted">{{ booking_request.booking_date }}</td>
-            <td class="text-muted testing_locator">
-              {{ booking_request.booking_message }}
-            </td>
             <td class="text-muted"></td>
           </tr>
+
           {% endif %} {% endfor %}
         </tbody>
       </table>
