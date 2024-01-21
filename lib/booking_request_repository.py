@@ -5,13 +5,22 @@ class BookingRequestRepository:
     def __init__(self, db_connection):
         self._connection = db_connection
 
-    def get_by_host_id(self, host_id):
+    # when called with a specific host id, return all associated booking
+    # requests (as BookingRequest objects)
+    def get_booking_requests_by_host_id(self, host_id: int) -> list[BookingRequest]:
         rows = self._connection.execute(
-            "select booking_requests.id, booking_id, guest_id, booking_message, status from booking_requests "
-            "join bookings on booking_id=bookings.id "
-            "join spaces on bookings.space_id=spaces.id "
-            "join users on spaces.user_id=users.id "
-            "where users.id = %s; ",
+            """
+            SELECT booking_requests.id,
+                booking_id,
+                guest_id,
+                booking_message,
+                status
+            FROM booking_requests 
+            JOIN bookings on booking_id=bookings.id 
+            JOIN spaces on bookings.space_id=spaces.id 
+            JOIN users on spaces.user_id=users.id 
+            WHERE users.id = %s;
+            """,
             [host_id],
         )
         booking_requests = []
@@ -28,8 +37,8 @@ class BookingRequestRepository:
 
         return booking_requests
 
-    # UNTESTED
-    def create(self, booking_request):
+    # Insert booking request into booking_requests table of database
+    def add_booking_request_to_db(self, booking_request: BookingRequest):
         self._connection.execute(
             """
             INSERT INTO booking_requests

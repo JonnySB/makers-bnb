@@ -206,7 +206,7 @@ def rent_space(booking_id, space_id):
 
         # add to db
         booking_request_repository = BookingRequestRepository(connection)
-        booking_request_repository.create(booking_request)
+        booking_request_repository.add_booking_request_to_db(booking_request)
 
         # potentially move the availability update to when request accepted
         booking_repo = BookingRepository(connection)
