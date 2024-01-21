@@ -46,11 +46,13 @@
           </li>
           {% if not logged_in %}
           <li>
-            <a href="/login" class="nav-link px-2">Requests</a>
+            <a href="/login" class="nav-link px-2">My Bookings</a>
           </li>
           {% else %}
           <li>
-            <a href="/manage_requests/host" class="nav-link px-2">Requests</a>
+            <a href="/manage_requests/host" class="nav-link px-2"
+              >My Bookings</a
+            >
           </li>
           {% endif %}
         </ul>
