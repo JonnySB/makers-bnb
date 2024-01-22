@@ -184,7 +184,7 @@ def test_make_booking_request(page, test_web_address, db_connection):
 
     page.click("a[href='/spaces/1']")
     available_date = page.locator("h6.available")
-    expect(available_date).to_have_text("2024-05-10")
+    expect(available_date).to_have_text("2024-05-12")
 
     page.click("h6.available")
 

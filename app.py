@@ -1,8 +1,9 @@
 import os
 from flask import Flask, request, render_template, redirect, session
+from lib import booking_request_repository
 from lib.database_connection import get_flask_database_connection
-from lib.space import *
-from lib.space_repository import *
+from lib.space import Space
+from lib.space_repository import SpaceRepository
 from lib.booking_request import BookingRequest
 from lib.booking_request_repository import BookingRequestRepository
 from lib.user import User
@@ -244,7 +245,7 @@ def rent_space(booking_id, space_id):
 
 # UNTESTED
 @app.route("/manage_requests/host", methods=["GET"])
-def manage_booking_requests():
+def manage_booking_requests_as_host():
     connection = get_flask_database_connection(app)
     logged_in = session.get("logged_in", False)
     user_details = get_user_from_session_details(connection)
@@ -259,7 +260,7 @@ def manage_booking_requests():
     )
 
     return render_template(
-        "manage_booking_requests.html",
+        "manage_booking_requests_as_host.html",
         booking_requests=booking_requests,
         logged_in=logged_in,
         user=user_details,
@@ -301,10 +302,72 @@ def accept_booking_request(booking_request_id):
 @app.route("/manage_bookings/reject/<booking_request_id>", methods=["POST"])
 def reject_booking_request(booking_request_id):
     connection = get_flask_database_connection(app)
+    logged_in = session.get("logged_in", False)
+    user_details = get_user_from_session_details(connection)
+
+    # redirect to login if session expires
+    if user_details is None:
+        return redirect("/login")
     booking_req_man_repo = BookingRequestManagerRepository(connection)
     booking_req_man_repo.set_booking_request_status_to_declined(booking_request_id)
 
+    # Set booking availability to true
+    booking_req_repository = BookingRequestRepository(connection)
+    booking_request = booking_req_repository.get_booking_request_by_id(
+        booking_request_id
+    )
+    booking_repo = BookingRepository(connection)
+    booking_repo.set_booking_availability_to_true(booking_request.booking_id)
+
     return redirect("/manage_requests/host")
+
+
+@app.route("/manage_requests/guest")
+def manage_booking_requests_as_guest():
+    connection = get_flask_database_connection(app)
+    logged_in = session.get("logged_in", False)
+    user_details = get_user_from_session_details(connection)
+
+    # redirect to login if session expires
+    if user_details is None:
+        return redirect("/login")
+
+    booking_request_manager_repository = BookingRequestManagerRepository(connection)
+
+    booking_requests = booking_request_manager_repository.get_BRM_by_guest_id(
+        user_details.id
+    )
+
+    return render_template(
+        "manage_booking_requests_as_guest.html",
+        booking_requests=booking_requests,
+        logged_in=logged_in,
+        user=user_details,
+    )
+
+
+@app.route("/manage_bookings/cancel_request/<booking_request_id>", methods=["POST"])
+def cancel_booking_request(booking_request_id):
+    connection = get_flask_database_connection(app)
+    logged_in = session.get("logged_in", False)
+    user_details = get_user_from_session_details(connection)
+
+    # redirect to login if session expires
+    if user_details is None:
+        return redirect("/login")
+    booking_req_repository = BookingRequestRepository(connection)
+    booking_request = booking_req_repository.get_booking_request_by_id(
+        booking_request_id
+    )
+    booking_req_repository.delete_booking_request_by_booking_request_id(
+        booking_request_id
+    )
+
+    # Set booking availability to true
+    booking_repo = BookingRepository(connection)
+    booking_repo.set_booking_availability_to_true(booking_request.booking_id)
+
+    return redirect("/manage_requests/guest")
 
 
 if __name__ == "__main__":

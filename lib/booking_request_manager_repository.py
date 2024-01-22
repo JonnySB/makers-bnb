@@ -127,3 +127,46 @@ class BookingRequestManagerRepository:
             """,
             [booking_request_id],
         )
+
+    # Call with guest_id to get back all Booking Request Manager objects
+    # associated with ID.
+    def get_BRM_by_guest_id(self, guest_id: int) -> list[BookingRequestManager]:
+        rows = self._connection.execute(
+            """
+            SELECT
+                booking_requests.id as booking_request_id,
+                booking_id,
+                bookings.date as booking_date,
+                spaces.name as space_name,
+                guests.id as guest_id,
+                guests.username as guest_username,
+                booking_message,
+                status,
+                hosts.id as host_id
+            FROM booking_requests
+            JOIN bookings on booking_id=bookings.id
+            JOIN spaces on bookings.space_id=spaces.id
+            JOIN users guests on guest_id = guests.id
+            JOIN users hosts on spaces.user_id = hosts.id
+            WHERE guests.id = %s
+            ORDER BY status;
+            """,
+            [guest_id],
+        )
+        booking_requests = []
+        for row in rows:
+            booking_requests.append(
+                BookingRequestManager(
+                    row["booking_request_id"],
+                    row["booking_id"],
+                    row["space_name"],
+                    row["guest_id"],
+                    row["guest_username"],
+                    row["booking_date"],
+                    row["booking_message"],
+                    row["status"],
+                    row["host_id"],
+                )
+            )
+
+        return booking_requests

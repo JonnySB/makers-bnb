@@ -25,23 +25,12 @@ def test_get_BRM_by_host_id(db_connection):
         ),
         BookingRequestManager(
             2,
-            1,
+            2,
             "Enchanted Retreat",
             2,
             "user2",
-            date(2024, 5, 10),
+            date(2024, 5, 11),
             "Would be fab to stay!",
-            1,
-            1,
-        ),
-        BookingRequestManager(
-            3,
-            1,
-            "Enchanted Retreat",
-            3,
-            "user3",
-            date(2024, 5, 10),
-            "Would be awesome to stay!",
             1,
             1,
         ),
@@ -75,7 +64,7 @@ def test_get_booking_request_ids_by_booking_id(db_connection):
     booking_request_repo = BookingRequestManagerRepository(db_connection)
 
     booking_requests = booking_request_repo.get_booking_request_ids_by_booking_id(1)
-    assert booking_requests == [1, 2, 3]
+    assert booking_requests == [1]
 
 
 # tests that when called with a particular booking_request_id, the
@@ -150,3 +139,25 @@ def test_set_booking_request_status_to_(db_connection):
         3,
         1,
     )
+
+
+# tests that when called with a particular guest_id, the associated booking
+# requests are returned as BookingRequestManager objects.
+def test_get_BRM_by_guest_id(db_connection):
+    db_connection.seed("seeds/makers_bnb.sql")
+    booking_request_repo = BookingRequestManagerRepository(db_connection)
+
+    booking_requests = booking_request_repo.get_BRM_by_guest_id(1)
+    assert booking_requests == [
+        BookingRequestManager(
+            1,
+            1,
+            "Enchanted Retreat",
+            1,
+            "user1",
+            date(2024, 5, 10),
+            "Would be great to stay!",
+            1,
+            1,
+        ),
+    ]
