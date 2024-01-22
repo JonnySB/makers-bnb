@@ -2,8 +2,8 @@ import os
 from flask import Flask, request, render_template, redirect, session
 from lib import booking_request_repository
 from lib.database_connection import get_flask_database_connection
-from lib.space import *
-from lib.space_repository import *
+from lib.space import Space
+from lib.space_repository import SpaceRepository
 from lib.booking_request import BookingRequest
 from lib.booking_request_repository import BookingRequestRepository
 from lib.user import User
