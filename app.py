@@ -1,6 +1,5 @@
 import os
-from flask import Flask, request, render_template, redirect, session
-from lib import booking_request_repository
+from flask import Flask, request, render_template, redirect, session, flash, url_for
 from lib.database_connection import get_flask_database_connection
 from lib.space import Space
 from lib.space_repository import SpaceRepository
@@ -12,12 +11,17 @@ from lib.booking import Booking
 from lib.booking_repository import BookingRepository
 from lib.booking_request_manager_repository import BookingRequestManagerRepository
 from datetime import datetime, timedelta
+from werkzeug.utils import secure_filename  # for file uploads
+import secrets  # for authentication
+
+UPLOAD_FOLDER = "static/uploads/"
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}  # limit filetype to protect from XSS
 
 # Create a new Flask app
-import secrets
-
 app = Flask(__name__)
+
 app.secret_key = secrets.token_hex(16)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
 # == HELPER METHODS ==
@@ -32,6 +36,21 @@ def get_user_from_session_details(connection) -> User | None:
     if user_id != None:
         user = user_repository.get_user_by_id(user_id)
     return user
+
+
+# UNTESTED
+# Check if extension is valid and an allowed extension
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+# UNTESTED
+def upload_file(request, space_name):
+    file = request.files["file"]
+    filename_to_save = space_name + "." + file.filename.rsplit(".", 1)[1].lower()
+    if file and allowed_file(file.filename):
+        filename = secure_filename(filename_to_save)
+        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
 
 # == USER CREATE / LOGIN / LOGOUT ROUTES ==
@@ -162,6 +181,7 @@ def create_space():
         price = request.form["price"]
         available_from = request.form["available_from"]
         available_to = request.form["available_to"]
+        upload_file(request, name)
 
         user = get_user_from_session_details(connection)
         # redirect to login if session expires
