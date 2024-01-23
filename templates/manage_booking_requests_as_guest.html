@@ -140,6 +140,7 @@
       <table class="table .table-sm">
         <thead>
           <tr>
+            <th></th>
             <th class="text-center">Booking Status</th>
             <th>Space Name</th>
             <th>Date</th>
@@ -151,6 +152,16 @@
           {% for booking_request in booking_requests %} {% if
           booking_request.status == "Pending" %}
           <tr>
+            <td>
+              <img
+                src="{{ url_for('static', filename='uploads/' + booking_request.space_name | replace(' ','_')+ '.jpg') }}"
+                class="d-block mx-lg-auto img-fluid rounded-3"
+                alt="Bootstrap Themes"
+                width="200"
+                height="100"
+                loading="lazy"
+              />
+            </td>
             <td class="text-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -188,6 +199,16 @@
           </tr>
           {% elif booking_request.status == "Accepted" %}
           <tr>
+            <td>
+              <img
+                src="{{ url_for('static', filename='uploads/' + booking_request.space_name | replace(' ','_')+ '.jpg') }}"
+                class="d-block mx-lg-auto img-fluid rounded-3"
+                alt="Bootstrap Themes"
+                width="200"
+                height="100"
+                loading="lazy"
+              />
+            </td>
             <td class="text-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -224,6 +245,16 @@
           </tr>
           {% else %}
           <tr class="table-secondary">
+            <td>
+              <img
+                src="{{ url_for('static', filename='uploads/' + booking_request.space_name | replace(' ','_')+ '.jpg') }}"
+                class="d-block mx-lg-auto img-fluid rounded-3"
+                alt="Bootstrap Themes"
+                width="200"
+                height="100"
+                loading="lazy"
+              />
+            </td>
             <td class="text-muted text-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
