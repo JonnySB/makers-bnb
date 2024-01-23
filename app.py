@@ -39,18 +39,11 @@ def get_user_from_session_details(connection) -> User | None:
 
 
 # UNTESTED
-# Check if extension is valid and an allowed extension
-def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-# UNTESTED
 def upload_file(request, space_name):
     file = request.files["file"]
     filename_to_save = space_name + "." + file.filename.rsplit(".", 1)[1].lower()
-    if file and allowed_file(file.filename):
-        filename = secure_filename(filename_to_save)
-        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+    filename = secure_filename(filename_to_save)
+    file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
 
 # == USER CREATE / LOGIN / LOGOUT ROUTES ==

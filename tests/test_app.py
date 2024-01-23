@@ -2,6 +2,7 @@ from playwright.sync_api import Page, expect
 from lib.user_repository import UserRepository
 from lib.user import User
 from app import *
+import time
 import os
 import pytest
 
@@ -70,17 +71,18 @@ def test_create_space(page, test_web_address, db_connection):
     # List a space
     page.click("a[href='/spaces/new']")
 
-    cwd = os.getcwd()
-    file_path = os.path.join(cwd, "/static/uploads/Test_Name.jpg")
-    page.set_input_files("#file-upload", file_path)
+    file_path = os.path.join(os.getcwd(), "../static/test_images/test_image.jpg")
+    page.set_input_files('input[type="file"]', file_path)
 
-    page.fill("input[name='name']", "Test Name")
+    page.fill("input[name='name']", "TestName")
     page.fill("input[name='description']", "Test Description")
     page.fill("input[name='price']", "100")
     page.fill("input[name='available_from']", "2024-03-26")
     page.fill("input[name='available_to']", "2024-03-29")
-    page.click("button[type='submit']")
     page.screenshot(path="screenshot.png")
+    page.click("button[id='button-submit']")
+    time.sleep(5)
+    page.screenshot(path="screenshot2.png")
     name_element = page.locator(".t-space-name")
     expect(name_element).to_have_text(
         [
