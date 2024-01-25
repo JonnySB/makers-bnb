@@ -80,12 +80,30 @@
     <div class="my-5 text-center">
       <h1 class="display-5 fw-bold text-body-emphasis">List a Space</h1>
     </div>
-    <form action="/spaces/new" method="post">
+    <form action="/spaces/new" method="post" enctype="multipart/form-data">
       <div class="container w-75">
         <div class="row p-5 align-items-center rounded-3 border">
           <div class="row g-1">
+            <label for="file" class="form-label">Image</label>
+            <div class="input-group">
+              <input
+                type="file"
+                class="form-control"
+                name="file"
+                id="file-upload"
+              />
+            </div>
+          </div>
+
+          <div class="row g-1">
             <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" name="name" id="name" />
+            <input
+              type="text"
+              class="form-control"
+              name="name"
+              id="name"
+              required
+            />
           </div>
 
           <div class="row g-1">
@@ -95,6 +113,7 @@
               class="form-control"
               name="description"
               id="description"
+              required
             />
           </div>
 
@@ -102,7 +121,13 @@
             <label for="name" class="form-label">Price per night</label>
             <div class="input-group">
               <span class="input-group-text">£</span>
-              <input type="text" class="form-control" name="price" id="price" />
+              <input
+                type="text"
+                class="form-control"
+                name="price"
+                id="price"
+                required
+              />
             </div>
           </div>
 
@@ -115,6 +140,7 @@
               class="form-control"
               name="available_from"
               id="available_from"
+              required
             />
           </div>
 
@@ -125,6 +151,7 @@
               class="form-control"
               name="available_to"
               id="available_to"
+              required
             />
           </div>
         </div>
@@ -137,6 +164,7 @@
             <button
               type="submit"
               class="btn btn-primary btn-lg px-4 gap-3 t-list-space"
+              id="button-submit"
             >
               List a space
             </button>

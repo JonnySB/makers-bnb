@@ -99,7 +99,7 @@
         </p>
         {% if not logged_in %}
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-          <a href="/signup"
+          <a href="/login"
             ><button type="button" class="btn btn-primary btn-lg px-4 gap-3">
               List a space
             </button></a
@@ -132,6 +132,14 @@
             class="list-group-item list-group-item-action d-flex gap-3 py-3"
             aria-current="true"
           >
+            <img
+              src="{{ url_for('static', filename='uploads/' + space.name | replace(' ','_')+ '.jpg') }}"
+              class="d-block mx-lg-auto img-fluid rounded-3"
+              alt="Bootstrap Themes"
+              width="200"
+              height="100"
+              loading="lazy"
+            />
             <div class="d-flex gap-2 w-100 justify-content-between">
               <div>
                 <h6 class="mb-0 t-space-name">{{ space.name }}</h6>
