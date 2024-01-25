@@ -2,35 +2,43 @@
 
 ## What is MakersBnB?
 
-MakersBnB is a limited-functionaity copy of the concept behind the AirBnB
+MakersBnB is a limited-functionality copy of the concept behind the AirBnB
 platform. The predominant focus was on using Python and Flask to create a
-website that, coupled with a postgres backend, is able to persist data and
-inject it into the static html pages using the jinja template engine. To
-create a basic UI, a bootstrap theme was used.
+website that, coupled with a postgres back-end, is able to persist data and
+inject it into the static html pages using the jinja template engine. Bootstrap
+was used to create a basic UI, however, this was not the focus of the website.
 
 ![Homepage](/static/readme_images/homepage.png)
 
 ## How was MakersBnB developed?
 
-Initially started as a group project with 5 other developers on the Makers
-Software Engineering Bootcamp, and later taken further as a way to experiment
-with additional Flask concepts myself, MakersBnB started life as an
-opportunity to learn about managing source control when working as part of an
-engineering team (i.e. creating feature branches, pull requests, holding code
-reviews and ultimately merging to main). In addition, having started with user
-stories, we planned our work such that all developers were able to remain
-productive. I.e. using agile methodologies, converting user stories to tickets
-(creating vertical slices of work to avoid inter-feature dependencies and
-blocking) and agreeing important information ( such as variable naming,
-database structure etc.) beforehand.
+MakersBnB started life as a group project with 5 other developers on the Makers
+Software Engineering Bootcamp. However, upon delivering the MVP, I opted to
+continue working on the project myself as an opportunity to experiment with
+additional flask features / concepts.
 
-After the week long project, I decided to continue building out the project to
-include a database backed booking management system, and to incorporate
-functionality to handle additional data types (such as image uploads). I also
-spent considerable time refactoring the project and writing tests to improve
-test coverage, readability and maintainablility.
+## What did I learn about throughout this project?
 
-## Can I run MakersBnB myself?
+### Group work section:
+
+- Managing source control across multiple feature branches. I.e. branching, re-basing with any updates, pull requests, code reviews, merge requests etc.
+- Project planning: creating non-blocking streams of work such that we maintained developer productivity. I.e planning vertical slices such that dependencies were reduced
+- Agile methodology - sprint planning, stand-ups, retros etc.
+- Ensuring agreement upfront on key classes, attributes, methods, variable names and database structure
+
+### Personal technical skills development:
+
+- Refactoring to improve readability / maintainability
+- Database planning and design - database schema development
+- Postgres - Database creation, SQL queries, testing seed development
+- Software architecture - planning app structure, classes, objects etc.
+- Flask framework - Model Repositories, Model Objects, Routing, passing form data etc.
+- Test Driven Development (pytest, playwright, mocking etc.)
+- Authentication
+- HTML templating with Jinja template engine
+- CSS / Bootstrap
+
+# Can I run MakersBnB myself?
 
 Yes! Please follow the instructions below to get set up, and if you like you
 could try a few of the options in the 'Things you could try' section to see what
