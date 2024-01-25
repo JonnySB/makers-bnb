@@ -8,6 +8,8 @@ website that, coupled with a postgres backend, is able to persist data and
 inject it into the static html pages using the jinja template engine. To
 create a basic UI, a bootstrap theme was used.
 
+![Homepage](/static/readme_images/homepage.png)
+
 ## How was MakersBnB developed?
 
 Initially started as a group project with 5 other developers on the Makers
