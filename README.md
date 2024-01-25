@@ -83,5 +83,16 @@ the project is capable of.
 
 ## Images and planning materials:
 
-Database Schema:
+Database Schema - database normalisation taken into account:
 ![Database Schema](/static/readme_images/database_schema.png)
+
+### The following is a non-exhaustive set of images from accross the website.
+
+An area to manage your bookings:
+![Manage my bookings](/static/readme_images/manage_my_bookings.png)
+
+An area to sign-up a new user:
+![User sign up](/static/readme_images/user_sign_up.png)
+
+An area to make a booking request:
+![Space details page](/static/readme_images/space_details_page.png)
