@@ -35,6 +35,7 @@ additional flask features / concepts.
 - Flask framework - Model Repositories, Model Objects, Routing, passing form data etc.
 - Test Driven Development (pytest, playwright, mocking etc.)
 - Authentication
+- Basic security features. E.g. protection against SQL injection, XSS etc.
 - HTML templating with Jinja template engine
 - CSS / Bootstrap
 
