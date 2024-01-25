@@ -68,8 +68,20 @@ the project is capable of.
 #Visit http://localhost:5001/spaces in your browser
 ```
 
-## What should I do when running MakersBnB?
+## What could I try when running MakersBnB?
 
-- Install the project and run the testing suit. (Instructions found in the project setup section)
+- Install the project and run the testing suite. (Instructions found in the 'Can I run MakersBnB myself?' section above
+- Navigate the website whilst not logged in - notice some areas of the website / actions are restricted whilst not authenticated
+- Sign-up as a user and log in.
+  - Note, if you would rather log in as an existing test user, please use username: 'user1' through 'user5', password:'Password')
+- (While logged in) List a space and some dates it is available to book (List a space button on homepage)
+- (While logged in) Make a booking request for a space for a night (Click on a space from the home page, go into its details area and click on an available date)
+  - Note, if you do this for a space the logged in user created, you will be able to see / approve / reject this request in the booking area.
+- (While logged in) Navigate to 'Manage my bookings' and see all your booking requests both as Host and Guest under their respective sections.
+- (While logged in) Approve / Decline etc. some bookings in the Host booking area. Note, this will be updated for the Guest in their respective booking area.
+- (While logged in) Cancel a booking request in the Guest booking area. This will remove the request from the system all together.
 
 ## Images and planning materials:
+
+Database Schema:
+![Database Schema](/static/readme_images/database_schema.png)
